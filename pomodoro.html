@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Focus Timer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="pomodoro.css" />
+  </head>
+  <body data-mode="focus">
+    <main class="app">
+      <!-- Mode tabs: clicking one switches the timer mode -->
+      <nav class="modes" aria-label="Timer mode">
+        <button class="mode-btn is-active" data-mode="focus">Focus</button>
+        <button class="mode-btn" data-mode="short">Short break</button>
+        <button class="mode-btn" data-mode="long">Long break</button>
+      </nav>
+
+      <!-- Timer: SVG ring + time text on top -->
+      <section class="timer" aria-live="off">
+        <svg class="ring" viewBox="0 0 260 260" aria-hidden="true">
+          <circle class="ring-track" cx="130" cy="130" r="110" />
+          <circle class="ring-progress" cx="130" cy="130" r="110" />
+        </svg>
+        <div class="timer-text">
+          <span id="time" class="time">25:00</span>
+          <span id="label" class="label">Time to focus</span>
+        </div>
+      </section>
+
+      <!-- Controls -->
+      <div class="controls">
+        <button id="reset" class="btn btn-ghost" aria-label="Reset timer">
+          Reset
+        </button>
+        <button id="start" class="btn btn-main">Start</button>
+        <button id="skip" class="btn btn-ghost" aria-label="Skip to next mode">
+          Skip
+        </button>
+      </div>
+
+      <p class="session-info">
+        Sessions done: <strong id="sessions">0</strong>
+      </p>
+      <p class="hint">Press <kbd>Space</kbd> to start or pause</p>
+    </main>
+
+    <script src="pomodoro.js"></script>
+  </body>
+</html>
