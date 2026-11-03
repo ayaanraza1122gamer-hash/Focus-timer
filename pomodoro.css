@@ -1,0 +1,205 @@
+/* ---------- Theme tokens: each mode redefines these ---------- */
+:root {
+  --bg: #1b1633;
+  --surface: #271f4a;
+  --ink: #f6efe6;
+  --ink-soft: #b9b0d6;
+  --accent: #ffb86b;
+  --accent-ink: #2a1a05;
+}
+
+body[data-mode="short"] {
+  --bg: #0f3d3a;
+  --surface: #17524e;
+  --ink: #eafaf3;
+  --ink-soft: #9fcfc2;
+  --accent: #9be7c4;
+  --accent-ink: #06231f;
+}
+
+body[data-mode="long"] {
+  --bg: #12304f;
+  --surface: #1b4470;
+  --ink: #eaf3ff;
+  --ink-soft: #9db9d9;
+  --accent: #8ec5ff;
+  --accent-ink: #061a30;
+}
+
+/* ---------- Base ---------- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+body {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Bricolage Grotesque", system-ui, sans-serif;
+  transition:
+    background-color 0.6s ease,
+    color 0.6s ease;
+}
+
+.app {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+}
+
+/* ---------- Mode tabs ---------- */
+.modes {
+  display: flex;
+  gap: 6px;
+  padding: 6px;
+  background: var(--surface);
+  border-radius: 999px;
+  transition: background-color 0.6s ease;
+}
+
+.mode-btn {
+  border: 0;
+  background: transparent;
+  color: var(--ink-soft);
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 8px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
+}
+
+.mode-btn.is-active {
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+
+/* ---------- Timer ring ---------- */
+.timer {
+  position: relative;
+  width: min(80vw, 300px);
+  aspect-ratio: 1;
+}
+
+.ring {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg); /* start the ring at 12 o'clock */
+}
+
+.ring circle {
+  fill: none;
+  stroke-width: 10;
+}
+
+.ring-track {
+  stroke: var(--surface);
+  transition: stroke 0.6s ease;
+}
+
+.ring-progress {
+  stroke: var(--accent);
+  stroke-linecap: round;
+  transition: stroke 0.6s ease;
+  /* stroke-dasharray and stroke-dashoffset are set from script.js */
+}
+
+.timer-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.time {
+  font-size: clamp(3rem, 16vw, 4.5rem);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums; /* digits keep the same width, so the text doesn't jiggle */
+  letter-spacing: -0.02em;
+}
+
+.label {
+  color: var(--ink-soft);
+  font-size: 1rem;
+}
+
+/* ---------- Controls ---------- */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn {
+  font: inherit;
+  border: 0;
+  cursor: pointer;
+  border-radius: 999px;
+  transition:
+    transform 0.15s ease,
+    background-color 0.3s,
+    color 0.3s;
+}
+
+.btn:active {
+  transform: scale(0.96);
+}
+
+.btn-main {
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 800;
+  font-size: 1.1rem;
+  padding: 16px 44px;
+}
+
+.btn-ghost {
+  background: var(--surface);
+  color: var(--ink);
+  padding: 12px 20px;
+}
+
+.mode-btn:focus-visible,
+.btn:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
+}
+
+/* ---------- Footer text ---------- */
+.session-info {
+  color: var(--ink-soft);
+}
+.session-info strong {
+  color: var(--ink);
+}
+
+.hint {
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+
+kbd {
+  background: var(--surface);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-family: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
