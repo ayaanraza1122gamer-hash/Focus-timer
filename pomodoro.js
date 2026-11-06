@@ -1,24 +1,43 @@
 // ---------- Config ----------
 const MODES = {
-  focus: { minutes: 25, label: "Time to focus" },
-  short: { minutes: 5, label: "Take a short break" },
-  long: { minutes: 15, label: "Take a long break" },
+  focus: {
+    minutes: 25,
+    eyebrow: "One thing at a time",
+    label: "Time to focus",
+    tagline: "A little focus. A little closer.",
+  },
+  short: {
+    minutes: 5,
+    eyebrow: "Make room to recharge",
+    label: "Take a little breather",
+    tagline: "Step back. Come back brighter.",
+  },
+  long: {
+    minutes: 15,
+    eyebrow: "You've earned this pause",
+    label: "Rest a little longer",
+    tagline: "Good work begins with good rest.",
+  },
 };
 const SESSIONS_BEFORE_LONG_BREAK = 4;
 
 // ---------- DOM references ----------
 const timeEl = document.getElementById("time");
 const labelEl = document.getElementById("label");
+const eyebrowEl = document.getElementById("eyebrow");
+const taglineEl = document.getElementById("tagline");
 const sessionsEl = document.getElementById("sessions");
 const startBtn = document.getElementById("start");
+const startLabel = document.getElementById("start-label");
 const resetBtn = document.getElementById("reset");
 const skipBtn = document.getElementById("skip");
 const modeBtns = document.querySelectorAll(".mode-btn");
 const ring = document.querySelector(".ring-progress");
+const dotOrbit = document.getElementById("dot-orbit");
+const dots = document.querySelectorAll(".dot");
 
 // ---------- Ring setup ----------
-// A circle's length is 2 * PI * radius. We hide part of the stroke by
-// changing stroke-dashoffset, which makes the ring look like it drains.
+
 const RADIUS = 110;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 ring.style.strokeDasharray = CIRCUMFERENCE;
@@ -43,15 +62,27 @@ function render() {
   const text = formatTime(remainingMs);
   timeEl.textContent = text;
   document.title = `${text} - Focus Timer`;
-  labelEl.textContent = MODES[mode].label;
-  sessionsEl.textContent = completedSessions;
-  startBtn.textContent = intervalId ? "Pause" : "Start";
 
-  // Progress: 1 = full ring, 0 = empty ring
+  eyebrowEl.textContent = MODES[mode].eyebrow;
+  labelEl.textContent = MODES[mode].label;
+  taglineEl.textContent = MODES[mode].tagline;
+
+  startLabel.textContent = intervalId ? "Pause" : "Start";
+  sessionsEl.textContent = completedSessions;
+
   const progress = remainingMs / totalMs;
   ring.style.strokeDashoffset = CIRCUMFERENCE * (1 - progress);
 
-  // Theme switches through the data-mode attribute (see style.css)
+  dotOrbit.style.transform = `rotate(${progress * 360}deg)`;
+
+  const filled =
+    completedSessions > 0 &&
+    completedSessions % SESSIONS_BEFORE_LONG_BREAK === 0
+      ? SESSIONS_BEFORE_LONG_BREAK
+      : completedSessions % SESSIONS_BEFORE_LONG_BREAK;
+  dots.forEach((dot, i) => dot.classList.toggle("is-done", i < filled));
+
+  // Theme switches through the data-mode attribute (see the CSS)
   document.body.dataset.mode = mode;
   modeBtns.forEach((btn) => {
     btn.classList.toggle("is-active", btn.dataset.mode === mode);
@@ -59,8 +90,7 @@ function render() {
 }
 
 // ---------- Timer logic ----------
-// We don't subtract 1 second per tick. setInterval can run late (especially
-// in background tabs), so we compare against a fixed end time instead.
+
 function tick() {
   remainingMs = Math.max(0, endTime - Date.now());
   if (remainingMs === 0) {
@@ -75,12 +105,14 @@ function start() {
   endTime = Date.now() + remainingMs;
   intervalId = setInterval(tick, 200);
   render();
+  setStarsMoving(true);
 }
 
 function pause() {
   clearInterval(intervalId);
   intervalId = null;
   render();
+  setStarsMoving(false);
 }
 
 function toggle() {
@@ -111,7 +143,7 @@ function nextMode() {
 
 function finishSession() {
   if (mode === "focus") completedSessions++;
-  setMode(nextMode()); // the next mode waits for you to press Start
+  setMode(nextMode());
 }
 
 // ---------- Events ----------
