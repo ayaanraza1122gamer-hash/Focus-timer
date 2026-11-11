@@ -194,7 +194,7 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.07);
 }
 
-/* Soft glow behind the whole timer */
+/*  glow behind the whole timer */
 .timer::after {
   content: "";
   position: absolute;
@@ -213,7 +213,7 @@ body {
   inset: 2.5%;
   width: 95%;
   height: 95%;
-  transform: rotate(-90deg); /* start the ring at 12 o'clock */
+  transform: rotate(-90deg);
 }
 
 .ring circle {
@@ -233,8 +233,6 @@ body {
   transition: stroke 0.6s ease;
 }
 
-/* The wrapper is the same size as the ring. JS rotates it,
-   and the dot sits at its top edge, so it rides the ring. */
 .dot-orbit {
   position: absolute;
   inset: 2.5%;
@@ -284,7 +282,7 @@ body {
   font-size: calc(var(--size) * 0.26);
   line-height: 1;
   font-weight: 800;
-  font-variant-numeric: tabular-nums; /* digits keep the same width, so the text doesn't jiggle */
+  font-variant-numeric: tabular-nums;
   letter-spacing: -0.04em;
 }
 
@@ -438,7 +436,7 @@ kbd {
   font-family: inherit;
 }
 
-/* ---------- Mobile (matches the 390px design) ---------- */
+/* ---------- Mobile  ---------- */
 @media (max-width: 640px) {
   body {
     padding: 20px 24px 24px;
@@ -490,7 +488,6 @@ kbd {
     padding: 0 12px;
   }
 
-  /* Reset and Skip show text only on mobile */
   .btn-ghost svg {
     display: none;
   }

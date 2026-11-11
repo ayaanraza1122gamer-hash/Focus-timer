@@ -35,6 +35,10 @@ const modeBtns = document.querySelectorAll(".mode-btn");
 const ring = document.querySelector(".ring-progress");
 const dotOrbit = document.getElementById("dot-orbit");
 const dots = document.querySelectorAll(".dot");
+const chipModeEl = document.getElementById("chip-mode");
+const chipTimeEl = document.getElementById("chip-time");
+const sessions2El = document.getElementById("sessions-2");
+const MODE_NAMES = { focus: "Focus", short: "Short break", long: "Long break" };
 
 // ---------- Ring setup ----------
 
@@ -63,13 +67,18 @@ function render() {
   timeEl.textContent = text;
   document.title = `${text} - Focus Timer`;
 
+  // Text that changes with the mode
   eyebrowEl.textContent = MODES[mode].eyebrow;
   labelEl.textContent = MODES[mode].label;
   taglineEl.textContent = MODES[mode].tagline;
 
   startLabel.textContent = intervalId ? "Pause" : "Start";
   sessionsEl.textContent = completedSessions;
+  sessions2El.textContent = completedSessions;
+  chipModeEl.textContent = MODE_NAMES[mode];
+  chipTimeEl.textContent = text;
 
+  // Progress: 1 = full ring, 0 = empty ring
   const progress = remainingMs / totalMs;
   ring.style.strokeDashoffset = CIRCUMFERENCE * (1 - progress);
 
@@ -82,7 +91,6 @@ function render() {
       : completedSessions % SESSIONS_BEFORE_LONG_BREAK;
   dots.forEach((dot, i) => dot.classList.toggle("is-done", i < filled));
 
-  // Theme switches through the data-mode attribute (see the CSS)
   document.body.dataset.mode = mode;
   modeBtns.forEach((btn) => {
     btn.classList.toggle("is-active", btn.dataset.mode === mode);
@@ -90,7 +98,6 @@ function render() {
 }
 
 // ---------- Timer logic ----------
-
 function tick() {
   remainingMs = Math.max(0, endTime - Date.now());
   if (remainingMs === 0) {
@@ -143,7 +150,7 @@ function nextMode() {
 
 function finishSession() {
   if (mode === "focus") completedSessions++;
-  setMode(nextMode());
+  if (!document.getElementById("view-activities").hidden) showView("timer");
 }
 
 // ---------- Events ----------
@@ -156,7 +163,8 @@ modeBtns.forEach((btn) => {
 });
 
 document.addEventListener("keydown", (e) => {
-  if (e.code === "Space" && e.target.tagName !== "BUTTON") {
+  const inGames = !document.getElementById("view-activities").hidden;
+  if (e.code === "Space" && e.target.tagName !== "BUTTON" && !inGames) {
     e.preventDefault();
     toggle();
   }

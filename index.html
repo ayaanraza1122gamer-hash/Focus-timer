@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Focus Timer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="pomodoro.css" />
+    <link rel="stylesheet" href="activities.css" />
+  </head>
+  <body data-mode="focus">
+    <canvas id="bg"></canvas>
+
+    <div id="view-timer" class="view">
+      <!-- ---------- Header ---------- -->
+      <header class="top-bar">
+        <div class="brand">
+          <span class="brand-icon" aria-hidden="true">
+            <svg
+              width="19"
+              height="19"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M18 5h4" />
+              <path d="M20 3v4" />
+              <path
+                d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"
+              />
+            </svg>
+          </span>
+          <span>Dior focus timer</span>
+        </div>
+
+        <div class="quiet-setting">
+          <p class="top-tagline">Your little space to concentrate</p>
+          <!-- Placeholder: the sound feature isn't built yet -->
+          <button class="icon-btn" aria-label="Sound (coming soon)">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- ---------- Main ---------- -->
+      <main class="app">
+        <nav class="modes" aria-label="Timer mode">
+          <button class="mode-btn is-active" data-mode="focus">Focus</button>
+          <button class="mode-btn" data-mode="short">Short break</button>
+          <button class="mode-btn" data-mode="long">Long break</button>
+        </nav>
+
+        <section class="timer" aria-live="off">
+          <svg class="ring" viewBox="0 0 260 260" aria-hidden="true">
+            <circle class="ring-track" cx="130" cy="130" r="110" />
+            <circle class="ring-progress" cx="130" cy="130" r="110" />
+          </svg>
+          <!-- The glowing dot that rides the end of the progress line -->
+          <div class="dot-orbit" id="dot-orbit" aria-hidden="true">
+            <span class="orbit-dot"></span>
+          </div>
+          <div class="timer-text">
+            <span id="eyebrow" class="eyebrow">One thing at a time</span>
+            <span id="time" class="time">25:00</span>
+            <span id="label" class="label">Time to focus</span>
+          </div>
+        </section>
+
+        <div class="controls">
+          <button id="reset" class="btn btn-ghost" aria-label="Reset timer">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
+              <path d="M3 3v5h5" />
+            </svg>
+            Reset
+          </button>
+          <button id="start" class="btn btn-main">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <polygon points="6 4 20 12 6 20 6 4" />
+            </svg>
+            <span id="start-label">Start</span>
+          </button>
+          <button
+            id="skip"
+            class="btn btn-ghost"
+            aria-label="Skip to next mode"
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <polygon points="5 4 15 12 5 20 5 4" />
+              <line x1="19" y1="5" x2="19" y2="19" />
+            </svg>
+            Skip
+          </button>
+        </div>
+
+        <p id="tagline" class="tagline">A little focus. A little closer.</p>
+
+        <!-- Only visible during breaks (see CSS). Games will hook in here. -->
+        <a class="activity-link" href="#activities">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <line x1="6" x2="10" y1="11" y2="11" />
+            <line x1="8" x2="8" y1="9" y2="13" />
+            <line x1="15" x2="15.01" y1="12" y2="12" />
+            <line x1="18" x2="18.01" y1="10" y2="10" />
+            <path
+              d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z"
+            />
+          </svg>
+          A little play? Explore break activities
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M7 7h10v10" />
+            <path d="M7 17 17 7" />
+          </svg>
+        </a>
+      </main>
+
+      <!-- ---------- Footer ---------- -->
+      <footer class="bottom-bar">
+        <p class="footer-note">Less rush. More rhythm.</p>
+
+        <div class="bottom-center">
+          <p class="session-info">
+            <span class="dots" aria-hidden="true">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </span>
+            Sessions done: <strong id="sessions">0</strong>
+          </p>
+          <p class="hint">Press <kbd>Space</kbd> to start or pause</p>
+        </div>
+
+        <p class="ambience">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path
+              d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"
+            />
+          </svg>
+          Night ambience · Off
+        </p>
+      </footer>
+    </div>
+
+    <!-- ============ Break activities view ============ -->
+    <div id="view-activities" class="view" hidden>
+      <header class="top-bar">
+        <div class="brand">
+          <span class="brand-icon" aria-hidden="true">
+            <svg
+              width="19"
+              height="19"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M18 5h4" />
+              <path d="M20 3v4" />
+              <path
+                d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"
+              />
+            </svg>
+          </span>
+          <span>Focus Timer</span>
+        </div>
+        <div class="break-chip">
+          <span class="chip-dot"></span>
+          <span id="chip-mode">Short break</span>
+          <span id="chip-time" class="chip-time">05:00</span>
+        </div>
+      </header>
+
+      <button id="back" class="back-link">
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="m12 19-7-7 7-7" />
+          <path d="M19 12H5" />
+        </svg>
+        Back to timer
+      </button>
+
+      <main class="activities">
+        <h1>A little play, a fresh perspective.</h1>
+        <p class="sub">No tabs. No to-dos. Just a moment for you.</p>
+
+        <nav class="picker" aria-label="Break activity">
+          <button class="pick-btn is-active" data-game="snake">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <line x1="6" x2="10" y1="11" y2="11" />
+              <line x1="8" x2="8" y1="9" y2="13" />
+              <line x1="15" x2="15.01" y1="12" y2="12" />
+              <line x1="18" x2="18.01" y1="10" y2="10" />
+              <path
+                d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258A4 4 0 0 0 17.32 5z"
+              />
+            </svg>
+            Snake
+          </button>
+          <button class="pick-btn" data-game="memory">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+              <path
+                d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+              />
+            </svg>
+            Memory
+          </button>
+          <button class="pick-btn" data-game="breathing">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2" />
+              <path d="M9.6 4.6A2 2 0 1 1 11 8H2" />
+              <path d="M12.6 19.4A2 2 0 1 0 14 16H2" />
+            </svg>
+            Breathing
+          </button>
+        </nav>
+
+        <!-- ---------- Snake ---------- -->
+        <section id="panel-snake" class="game-panel">
+          <div class="card-frame">
+            <div class="panel-bar">
+              <p class="game-status">
+                <span class="live-dot"></span><span class="name">Snake</span
+                ><span class="meta">· <span id="status">Ready</span></span>
+              </p>
+              <p class="scores">
+                <span>Score <span id="score">000</span></span
+                ><span class="muted">Best <span id="best">000</span></span>
+              </p>
+            </div>
+            <div class="playfield"><canvas id="game"></canvas></div>
+          </div>
+          <div class="game-controls">
+            <p class="keys">
+              <kbd>←</kbd><kbd>↑</kbd><kbd>↓</kbd><kbd>→</kbd> to move
+            </p>
+            <button id="pause" class="pill-btn">Pause</button>
+          </div>
+        </section>
+
+        <!-- ---------- Memory ---------- -->
+        <section id="panel-memory" class="game-panel" hidden>
+          <div class="card-frame">
+            <div class="panel-bar">
+              <p class="game-status">
+                <span class="live-dot"></span><span class="name">Memory</span
+                ><span class="meta"
+                  >· <span id="mem-status">In play</span></span
+                >
+              </p>
+              <p class="scores">
+                <span id="mem-pairs">Pairs 0 / 6</span
+                ><span id="mem-moves" class="muted">Moves 0</span>
+              </p>
+            </div>
+            <div id="memory-grid" class="memory-grid"></div>
+          </div>
+          <div class="game-controls">
+            <p>Pick two cards to find a pair</p>
+            <button id="mem-new" class="pill-btn">New game</button>
+          </div>
+        </section>
+
+        <!-- ---------- Breathing ---------- -->
+        <section id="panel-breathing" class="game-panel" hidden>
+          <div class="card-frame">
+            <div class="panel-bar">
+              <p class="game-status">
+                <span class="live-dot"></span><span class="name">Breathing</span
+                ><span class="meta">· Guided</span>
+              </p>
+              <p class="scores"><span id="breath-cycle">Cycle 1 / 5</span></p>
+            </div>
+            <div class="breath-space">
+              <div class="breath-stage">
+                <svg
+                  class="breath-progress"
+                  viewBox="0 0 260 260"
+                  aria-hidden="true"
+                >
+                  <circle id="breath-arc" cx="130" cy="130" r="129" />
+                </svg>
+                <div class="breath-ring ring-a"></div>
+                <div class="breath-ring ring-b"></div>
+                <div id="breath-orb" class="breath-orb"></div>
+                <div class="breath-text">
+                  <strong id="breath-phase">Breathe in</strong>
+                  <span id="breath-count">4</span>
+                  <small id="breath-cue">Slowly, through your nose</small>
+                </div>
+              </div>
+              <ol class="breath-rhythm">
+                <li data-phase="0">Inhale 4s</li>
+                <li data-phase="1">Hold 4s</li>
+                <li data-phase="2">Exhale 6s</li>
+              </ol>
+            </div>
+          </div>
+          <div class="game-controls">
+            <p>Let your shoulders soften.</p>
+            <button id="breath-toggle" class="pill-btn">Pause breathing</button>
+          </div>
+        </section>
+      </main>
+
+      <footer class="reassure">
+        <p>
+          <svg
+            width="15"
+            height="15"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <line x1="10" x2="14" y1="2" y2="2" />
+            <line x1="12" x2="15" y1="14" y2="11" />
+            <circle cx="12" cy="14" r="8" />
+          </svg>
+          Your break timer keeps running. We'll let you know when it's time.
+        </p>
+        <p>Sessions done: <span id="sessions-2">0</span></p>
+      </footer>
+    </div>
+
+    <script src="particles.js"></script>
+    <script src="pomodoro.js"></script>
+    <script src="snake.js"></script>
+    <script src="activities.js"></script>
+  </body>
+</html>
